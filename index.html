@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZHANG YANG | Portfolio</title>
     <style>
-        /* 基础样式重置 */
+        /* ================= 基础样式重置 ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html {
             height: 100%;
@@ -15,16 +15,21 @@
             overflow: hidden;
         }
 
+        /* ================= 滚动容器与高度适配 ================= */
+        /* 手机端完美适配：引入 100dvh，防止系统导航栏遮挡 */
+        .container, section, .h-container, .h-slide {
+            height: 100vh; /* 兼容老浏览器 */
+            height: 100dvh; /* 现代手机浏览器专属防遮挡高度 */
+        }
+
         /* 纵向滚动容器 */
         .container {
-            height: 100vh;
             overflow-y: scroll;
             scroll-snap-type: y mandatory;
         }
         .container::-webkit-scrollbar { display: none; }
 
         section {
-            height: 100vh;
             width: 100%;
             scroll-snap-align: start;
             position: relative;
@@ -34,7 +39,6 @@
         .h-container {
             display: flex;
             width: 100%;
-            height: 100vh;
             overflow-x: scroll;
             overflow-y: hidden;
             scroll-snap-type: x mandatory;
@@ -43,11 +47,10 @@
 
         .h-slide {
             flex: 0 0 100vw; 
-            height: 100vh;
             scroll-snap-align: start;
         }
 
-        /* 媒体全屏铺满与画廊展示 */
+        /* ================= 媒体全屏铺满与画廊展示 ================= */
         .bg-video {
             width: 100%;
             height: 100%;
@@ -66,7 +69,7 @@
             padding-right: 20px;
         }
 
-        /* 文字叠加层 */
+        /* ================= 文字叠加层 ================= */
         .overlay {
             position: absolute;
             bottom: 50px;
@@ -90,7 +93,7 @@
             text-transform: capitalize; 
         }
 
-        /* 交互提示按钮样式 */
+        /* ================= 交互提示按钮样式 ================= */
         .hint-wrapper {
             position: absolute;
             bottom: 50px;
@@ -128,7 +131,7 @@
             50% { transform: translateY(-8px); opacity: 1; }
         }
 
-        /* 固定导航栏 */
+        /* ================= 固定导航栏 ================= */
         nav {
             position: fixed;
             top: 40px;
@@ -149,6 +152,26 @@
             z-index: 100;
             font-size: 12px;
             letter-spacing: 2px;
+        }
+
+        /* ================= 手机端专属响应式排版 ================= */
+        @media (max-width: 768px) {
+            nav { top: 20px; left: 20px; }
+            nav h1 { font-size: 14px; letter-spacing: 2px; }
+            .menu { top: 20px; right: 20px; font-size: 10px; }
+            
+            .artwork {
+                padding-top: 80px;
+                padding-bottom: 90px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .overlay { bottom: 30px; left: 20px; }
+            .overlay h2 { font-size: 12px; }
+            .overlay p { font-size: 10px; margin-top: 4px; }
+            
+            .hint-wrapper { bottom: 30px; right: 20px; }
+            .scroll-hint { font-size: 10px; letter-spacing: 1px; }
         }
     </style>
 </head>
@@ -283,18 +306,16 @@
                     const section = hContainer.closest('section');
                     const btnNext = section.querySelector('.btn-next');
                     const btnTop = section.querySelector('.btn-top');
-                    const btnNextSection = section.querySelector('.btn-next-section'); // 新增：获取向下按钮
+                    const btnNextSection = section.querySelector('.btn-next-section');
 
                     if (entry.isIntersecting) {
-                        // 滑到了最后一张图
                         if(btnNext) btnNext.style.display = 'none';   
                         if(btnTop) btnTop.style.display = 'block';   
-                        if(btnNextSection) btnNextSection.style.display = 'block'; // 显示向下按钮
+                        if(btnNextSection) btnNextSection.style.display = 'block'; 
                     } else {
-                        // 还没滑到最后一张图
                         if(btnNext) btnNext.style.display = 'block';  
                         if(btnTop) btnTop.style.display = 'none';    
-                        if(btnNextSection) btnNextSection.style.display = 'none'; // 隐藏向下按钮
+                        if(btnNextSection) btnNextSection.style.display = 'none'; 
                     }
                 });
             }, observerOptions);
@@ -305,36 +326,33 @@
                 const hContainer = section.querySelector('.h-container');
                 const btnNext = section.querySelector('.btn-next');
                 const btnTop = section.querySelector('.btn-top');
-                const btnNextSection = section.querySelector('.btn-next-section'); // 新增：获取向下按钮
+                const btnNextSection = section.querySelector('.btn-next-section'); 
                 
                 const lastSlide = hContainer.lastElementChild;
                 if (lastSlide) observer.observe(lastSlide);
 
-                // 点击：向右滑动
                 if (btnNext) {
                     btnNext.addEventListener('click', () => {
                         customScroll(hContainer, hContainer.scrollLeft + window.innerWidth, SCROLL_SPEED, true);
                     });
                 }
 
-                // 点击：返回顶部 (Section 3 用)
                 if (btnTop) {
                     btnTop.addEventListener('click', () => {
                         customScroll(mainContainer, 0, SCROLL_SPEED);
                         setTimeout(() => {
-                            hContainer.scrollTo({ left: 0 }); // 悄悄重置横向位置
+                            hContainer.scrollTo({ left: 0 }); 
                         }, SCROLL_SPEED + 100); 
                     });
                 }
 
-                // 点击：去下一页 (Section 2 用)
                 if (btnNextSection) {
                     btnNextSection.addEventListener('click', () => {
-                        const nextSection = section.nextElementSibling; // 自动获取下一个大板块
+                        const nextSection = section.nextElementSibling; 
                         if (nextSection) {
                             customScroll(mainContainer, nextSection.offsetTop, SCROLL_SPEED);
                             setTimeout(() => {
-                                hContainer.scrollTo({ left: 0 }); // 悄悄重置横向位置
+                                hContainer.scrollTo({ left: 0 }); 
                             }, SCROLL_SPEED + 100); 
                         }
                     });
